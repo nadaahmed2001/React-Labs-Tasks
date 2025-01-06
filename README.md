@@ -1,3 +1,5 @@
-## React course from ITI
---> Branch main: contains Lab3,4 <br/>
---> Branch Lab5: contains Lab5
+## React course from ITI (Lab Tasks)
+- Fetch List of popular movies using TMDB api
+- Movie details
+- Add/Remove movie to favorite
+- Switch Language (en/ar)
