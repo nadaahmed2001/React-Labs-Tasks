@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWatchlist, removeFromWatchlist } from "../store/slices/watchlistReducer";
-
+import LanguageContext from "../context/language";
 
 
 export default function MovieDetails() {
-
+  const {language}= useContext(LanguageContext);
 
   const dispatch = useDispatch();
+  const [movie, setMovie] = useState(null); 
+  const params = useParams();
   const watchlist = useSelector((state) => state.watchlist.movies);// Get the watchlist from the Redux store using the useSelector hook
 
   const isInWatchlist = watchlist.some((item) => item.id === movie.id);
@@ -21,18 +23,18 @@ export default function MovieDetails() {
       dispatch(addToWatchlist(movie));
     }
   };
-  const [movie, setMovie] = useState();
-  const params = useParams();
+
   const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
   useEffect(() => {
     // Fetch movie details using the movie ID
     axios
       .get(
-        `https://api.themoviedb.org/3/movie/${params.id}?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/movie/${params.id}?api_key=${apiKey}&language=${language}`
       )
       .then((res) => setMovie(res.data))
       .catch((err) => console.log(err));
-  }, [params.id]);
+  }, [params.id, language]);
 
   if (!movie)
     return (
@@ -77,19 +79,22 @@ export default function MovieDetails() {
           {/* Additional Information */}
           <ul className="list-group mb-4">
             <li className="list-group-item">
-              <strong>Release Date:</strong> {movie.release_date}
+              <strong>{language === 'en' ? "Release:" : "الإصدار"}</strong> {movie.release_date}
             </li>
             <li className="list-group-item">
-              <strong>Rating:</strong> {movie.vote_average} / 10 (
+              <strong>{language === 'en' ? "Rating:" : "التقييم"}</strong> {movie.vote_average} / 10 (
               {movie.vote_count} votes)
             </li>
             <li className="list-group-item">
-              <strong>Runtime:</strong> {movie.runtime} minutes
+              <strong>{language === 'en' ? "Runtime:" : "المدة"}</strong> {movie.runtime} minutes
             </li>
           </ul>
 
           <button className="btn btn-primary" onClick={handleWatchlist}>
-            {isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+          {isInWatchlist
+                            ? (language === 'en' ? "Remove from Watchlist" : "إزالة من المفضلة")
+                            : (language === 'en' ? "Add to Watchlist" : "إضافة إلى المفضلة")
+                        }
           </button>
         </div>
       </div>
